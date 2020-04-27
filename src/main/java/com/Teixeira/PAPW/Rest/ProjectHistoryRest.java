@@ -31,6 +31,7 @@ public class ProjectHistoryRest {
 	@PostMapping("")
 	public ResponseEntity<ProjectHistoryDTO> salvar(@RequestBody @Valid ProjectHistoryDTO DTO) {
 
+		DTO.setID(0);
 		return ResponseEntity.ok(projectHistoryService.salvar(DTO));
 	}
 

@@ -53,7 +53,7 @@ public class DepartmentRest {
 
 	// UPDATE
 	@PutMapping("/{id}")
-	public ResponseEntity<Department> update(Department department, @PathVariable int id) {
+	public ResponseEntity<Department> update(@RequestBody @Valid Department department, @PathVariable int id) {
 		if (department == null) {
 			return null;
 		} else {

@@ -24,6 +24,7 @@ public class ProjectDTO {
 		this.projectTitle = project.getProjectTitle();
 		this.minSalary = project.getMinSalary();
 		this.maxSalary = project.getMaxSalary();
+		this.ID = project.getID();
 
 	}
 

@@ -21,6 +21,7 @@ public class ProjectHistoryDTO {
 	public ProjectHistoryDTO(ProjectHistory projectHistory) {
 		this.startDate = projectHistory.getStartDate();
 		this.endDate = projectHistory.getEndDate();
+		this.ID = projectHistory.getID();
 	}
 
 	public int getID() {

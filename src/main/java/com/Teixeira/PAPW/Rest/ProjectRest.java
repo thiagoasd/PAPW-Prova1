@@ -31,6 +31,7 @@ public class ProjectRest {
 	@PostMapping("")
 	public ResponseEntity<ProjectDTO> salvar(@RequestBody @Valid ProjectDTO DTO) {
 
+		DTO.setID(0); //Evitar que seja salvo com o ID que o usuario queira
 		return ResponseEntity.ok(projectService.salvar(DTO));
 	}
 

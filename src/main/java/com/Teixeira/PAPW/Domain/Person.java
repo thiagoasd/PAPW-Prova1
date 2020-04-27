@@ -17,9 +17,6 @@ public class Person {
 	int ID;
 
 	@NotBlank
-	String projectTitle;
-
-	@NotBlank
 	String firstName;
 
 	@NotBlank
@@ -40,14 +37,6 @@ public class Person {
 
 	public void setID(int iD) {
 		ID = iD;
-	}
-
-	public String getProjectTitle() {
-		return projectTitle;
-	}
-
-	public void setProjectTitle(String projectTitle) {
-		this.projectTitle = projectTitle;
 	}
 
 	public String getFirstName() {

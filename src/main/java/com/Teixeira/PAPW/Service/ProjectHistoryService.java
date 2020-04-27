@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.Teixeira.PAPW.DTO.ProjectDTO;
 import com.Teixeira.PAPW.DTO.ProjectHistoryDTO;
 import com.Teixeira.PAPW.Domain.Person;
 import com.Teixeira.PAPW.Domain.ProjectHistory;
@@ -15,7 +17,11 @@ import javassist.NotFoundException;
 
 @Service
 public class ProjectHistoryService {
+
+	@Autowired
 	private ProjectHistoryRepository projectHistoryRepository;
+
+	@Autowired
 	private PersonService personService;
 
 	public ProjectHistoryDTO salvar(ProjectHistoryDTO DTO) {
@@ -28,8 +34,13 @@ public class ProjectHistoryService {
 		}
 
 		ProjectHistory project = getProjectHistory(DTO);
-		projectHistoryRepository.save(project);
-
+		project = projectHistoryRepository.save(project);
+		DTO = new ProjectHistoryDTO(project);
+		try {
+			DTO.setManager(personService.consultaPorId(project.getManagerId()));
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+		}
 		return DTO;
 	}
 
@@ -37,7 +48,7 @@ public class ProjectHistoryService {
 		Optional<ProjectHistory> projectOpt = projectHistoryRepository.findById(id);
 
 		if (projectOpt.isEmpty()) {
-			throw new NotFoundException("Departamento não localizado");
+			throw new NotFoundException("ProjectHistory não localizado");
 		}
 		ProjectHistory proj = projectOpt.get();
 		ProjectHistoryDTO DTO = new ProjectHistoryDTO(proj);
@@ -52,17 +63,23 @@ public class ProjectHistoryService {
 		List<ProjectHistoryDTO> DTOs = new ArrayList<ProjectHistoryDTO>();
 
 		for (ProjectHistory project : projs) {
-			DTOs.add(new ProjectHistoryDTO(project));
+			ProjectHistoryDTO tmp = new ProjectHistoryDTO(project);
+			try {
+				tmp.setManager(personService.consultaPorId(project.getManagerId()));
+				DTOs.add(tmp);
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		return DTOs;
 	}
 
-	public ProjectHistoryDTO update(int id, ProjectHistoryDTO project) throws NotFoundException {
+	public ProjectHistoryDTO update(int id, ProjectHistoryDTO DTO) throws NotFoundException {
 		consultaPorId(id); // Para checar se dept existe mesmo, se não existir lança exception
-
-		project.setID(id); // Salva objeto com a id do path, não do objeto
-		return salvar(project);
+		DTO.setID(id); // Salva objeto com a id do path, não do objeto
+		return salvar(DTO);
 
 	}
 
@@ -77,6 +94,7 @@ public class ProjectHistoryService {
 		project.setStartDate(DTO.getStartDate());
 		project.setEndDate(DTO.getEndDate());
 		project.setManagerId(DTO.getManager().getID());
+		project.setID(DTO.getID());
 		return project;
 	}
 

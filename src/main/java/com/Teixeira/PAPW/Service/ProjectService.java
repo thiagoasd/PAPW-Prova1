@@ -19,6 +19,8 @@ public class ProjectService {
 
 	@Autowired
 	private ProjectRepository projectRepository;
+
+	@Autowired
 	private PersonService personService;
 
 	public ProjectDTO salvar(ProjectDTO DTO) {
@@ -31,7 +33,14 @@ public class ProjectService {
 		}
 
 		Project project = getProject(DTO);
-		projectRepository.save(project);
+		project = projectRepository.save(project);
+		DTO = new ProjectDTO(project);
+		try {
+			DTO.setManager(personService.consultaPorId(project.getManagerId()));
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return DTO;
 	}
@@ -40,7 +49,7 @@ public class ProjectService {
 		Optional<Project> projectOpt = projectRepository.findById(id);
 
 		if (projectOpt.isEmpty()) {
-			throw new NotFoundException("Departamento não localizado");
+			throw new NotFoundException("Project não localizado");
 		}
 		Project proj = projectOpt.get();
 		ProjectDTO DTO = new ProjectDTO(proj);
@@ -55,32 +64,37 @@ public class ProjectService {
 		List<ProjectDTO> DTOs = new ArrayList<ProjectDTO>();
 
 		for (Project project : projs) {
-			DTOs.add(new ProjectDTO(project));
+			try {
+				ProjectDTO tmp = new ProjectDTO(project);
+				tmp.setManager(personService.consultaPorId(project.getManagerId()));
+				DTOs.add(tmp);
+			} catch (NotFoundException e) {
+			}
+
 		}
 
 		return DTOs;
 	}
 
-	public ProjectDTO update(int id, ProjectDTO project) throws NotFoundException {
+	public ProjectDTO update(int id, ProjectDTO DTO) throws NotFoundException {
 		consultaPorId(id); // Para checar se dept existe mesmo, se não existir lança exception
-
-		project.setID(id); // Salva objeto com a id do path, não do objeto
-		return salvar(project);
+		DTO.setID(id);
+		return salvar(DTO);
 
 	}
 
 	public void deletePorId(int id) throws NotFoundException {
-		consultaPorId(id); //checa se existe
+		consultaPorId(id); // checa se existe
 		projectRepository.deleteById(id);
 	}
 
 	private Project getProject(ProjectDTO DTO) {
 		Project project = new Project();
-		project.setID(DTO.getID());
 		project.setManagerId(DTO.getManager().getID());
 		project.setMaxSalary(DTO.getMaxSalary());
 		project.setMinSalary(DTO.getMinSalary());
 		project.setProjectTitle(DTO.getProjectTitle());
+		project.setID(DTO.getID());
 		return project;
 	}
 
